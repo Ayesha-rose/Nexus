@@ -16,14 +16,9 @@ export const ForgotPasswordPage: React.FC = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    try {
-      await forgotPassword(email);
-      setIsSubmitted(true);
-    } catch (error) {
-      // Error is handled by the AuthContext
-    } finally {
-      setIsLoading(false);
-    }
+    await forgotPassword(email);
+    setIsSubmitted(true);
+    setIsLoading(false);
   };
   
   if (isSubmitted) {

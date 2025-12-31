@@ -7,14 +7,16 @@ import { Badge } from '../../components/ui/Badge';
 import { CollaborationRequestCard } from '../../components/collaboration/CollaborationRequestCard';
 import { InvestorCard } from '../../components/investor/InvestorCard';
 import { useAuth } from '../../context/AuthContext';
+import { useCalendar } from '../../context/CalendarContext';
 import { CollaborationRequest } from '../../types';
 import { getRequestsForEntrepreneur } from '../../data/collaborationRequests';
-import { investors } from '../../data/users';
+import { investors, findUserById } from '../../data/users';
 
 export const EntrepreneurDashboard: React.FC = () => {
   const { user } = useAuth();
+  const { events } = useCalendar();
   const [collaborationRequests, setCollaborationRequests] = useState<CollaborationRequest[]>([]);
-  const [recommendedInvestors, setRecommendedInvestors] = useState(investors.slice(0, 3));
+  const [recommendedInvestors] = useState(investors.slice(0, 3));
   
   useEffect(() => {
     if (user) {
@@ -35,6 +37,7 @@ export const EntrepreneurDashboard: React.FC = () => {
   if (!user) return null;
   
   const pendingRequests = collaborationRequests.filter(req => req.status === 'pending');
+  const upcomingMeetings = events.filter(e => (e.status === 'confirmed' || e.status === 'pending') && (e.organizer === user.id || e.invitee === user.id));
   
   return (
     <div className="space-y-6 animate-fade-in">
@@ -93,7 +96,7 @@ export const EntrepreneurDashboard: React.FC = () => {
               </div>
               <div>
                 <p className="text-sm font-medium text-accent-700">Upcoming Meetings</p>
-                <h3 className="text-xl font-semibold text-accent-900">2</h3>
+                <h3 className="text-xl font-semibold text-accent-900">{upcomingMeetings.length}</h3>
               </div>
             </div>
           </CardBody>
@@ -113,6 +116,54 @@ export const EntrepreneurDashboard: React.FC = () => {
           </CardBody>
         </Card>
       </div>
+
+      {/* Upcoming meetings list */}
+      <Card>
+        <CardHeader>
+          <h2 className="text-lg font-medium text-gray-900">Upcoming Meetings</h2>
+        </CardHeader>
+        <CardBody>
+          {upcomingMeetings.length > 0 ? (
+            <ul className="divide-y divide-gray-200">
+              {upcomingMeetings.map(meeting => {
+                const otherUserId = meeting.organizer === user.id ? meeting.invitee : meeting.organizer;
+                const otherUser = findUserById(otherUserId);
+                
+                return (
+                  <li key={meeting.start?.toString()} className="py-3 flex justify-between items-center">
+                    <div>
+                      {meeting.status === 'confirmed' ? (
+                        <p className="font-semibold text-green-500">
+                          Your meeting with {otherUser?.name} is confirmed
+                        </p>
+                      ) : (
+                        <p className="font-semibold text-yellow-500">
+                          Your meeting with {otherUser?.name} is still pending
+                        </p>
+                      )}
+                      <p className="text-sm text-gray-500">
+                        {new Date(meeting.start!).toLocaleString()}
+                      </p>
+                    </div>
+                    <Link to="/calendar">
+                      <Button variant="outline" size="sm">View Details</Button>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-600">No upcoming meetings.</p>
+              <Link to="/calendar">
+                <Button variant="outline" className="mt-2">
+                  Go to Calendar
+                </Button>
+              </Link>
+            </div>
+          )}
+        </CardBody>
+      </Card>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Collaboration requests */}

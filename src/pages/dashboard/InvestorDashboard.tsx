@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, PieChart, Filter, Search, PlusCircle } from 'lucide-react';
+import { Users, PieChart, Filter, Search, PlusCircle, Calendar } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card, CardBody, CardHeader } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
 import { Badge } from '../../components/ui/Badge';
 import { EntrepreneurCard } from '../../components/entrepreneur/EntrepreneurCard';
 import { useAuth } from '../../context/AuthContext';
-import { Entrepreneur } from '../../types';
-import { entrepreneurs } from '../../data/users';
+import { useCalendar } from '../../context/CalendarContext';
+import { entrepreneurs, findUserById } from '../../data/users';
 import { getRequestsFromInvestor } from '../../data/collaborationRequests';
 
 export const InvestorDashboard: React.FC = () => {
   const { user } = useAuth();
+  const { events } = useCalendar();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   
@@ -20,7 +21,6 @@ export const InvestorDashboard: React.FC = () => {
   
   // Get collaboration requests sent by this investor
   const sentRequests = getRequestsFromInvestor(user.id);
-  const requestedEntrepreneurIds = sentRequests.map(req => req.entrepreneurId);
   
   // Filter entrepreneurs based on search and industry filters
   const filteredEntrepreneurs = entrepreneurs.filter(entrepreneur => {
@@ -49,6 +49,8 @@ export const InvestorDashboard: React.FC = () => {
         : [...prevSelected, industry]
     );
   };
+  
+  const upcomingMeetings = events.filter(e => (e.status === 'confirmed' || e.status === 'pending') && (e.organizer === user.id || e.invitee === user.id));
   
   return (
     <div className="space-y-6 animate-fade-in">
@@ -101,7 +103,7 @@ export const InvestorDashboard: React.FC = () => {
       </div>
       
       {/* Stats summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="bg-primary-50 border border-primary-100">
           <CardBody>
             <div className="flex items-center">
@@ -145,7 +147,69 @@ export const InvestorDashboard: React.FC = () => {
             </div>
           </CardBody>
         </Card>
+        
+        <Card className="bg-success-50 border border-success-100">
+          <CardBody>
+            <div className="flex items-center">
+              <div className="p-3 bg-green-100 rounded-full mr-4">
+                <Calendar size={20} className="text-success-700" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-success-700">Upcoming Meetings</p>
+                <h3 className="text-xl font-semibold text-success-900">{upcomingMeetings.length}</h3>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
       </div>
+
+      {/* Upcoming meetings list */}
+      <Card>
+        <CardHeader>
+          <h2 className="text-lg font-medium text-gray-900">Upcoming Meetings</h2>
+        </CardHeader>
+        <CardBody>
+          {upcomingMeetings.length > 0 ? (
+            <ul className="divide-y divide-gray-200">
+              {upcomingMeetings.map(meeting => {
+                const otherUserId = meeting.organizer === user.id ? meeting.invitee : meeting.organizer;
+                const otherUser = findUserById(otherUserId);
+                
+                return (
+                  <li key={meeting.start?.toString()} className="py-3 flex justify-between items-center">
+                    <div>
+                      {meeting.status === 'confirmed' ? (
+                        <p className="font-semibold text-green-500">
+                          Your meeting with {otherUser?.name} is confirmed
+                        </p>
+                      ) : (
+                        <p className="font-semibold text-yellow-500">
+                          Your meeting with {otherUser?.name} is still pending
+                        </p>
+                      )}
+                      <p className="text-sm text-gray-500">
+                        {new Date(meeting.start!).toLocaleString()}
+                      </p>
+                    </div>
+                    <Link to="/calendar">
+                      <Button variant="outline" size="sm">View Details</Button>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-600">No upcoming meetings.</p>
+              <Link to="/calendar">
+                <Button variant="outline" className="mt-2">
+                  Go to Calendar
+                </Button>
+              </Link>
+            </div>
+          )}
+        </CardBody>
+      </Card>
       
       {/* Entrepreneurs grid */}
       <div>

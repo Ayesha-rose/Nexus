@@ -84,7 +84,16 @@ export const CollaborationRequestCard: React.FC<CollaborationRequestCardProps> =
         </div>
         
         <div className="mt-4">
-          <p className="text-sm text-gray-600">{request.message}</p>
+          <p className="text-sm text-gray-600">
+            {request.status === 'pending' ?
+              `Your collaboration request with ${investor.name} is still pending` :
+              request.status === 'accepted' ?
+              `Your collaboration request with ${investor.name} is accepted` :
+              request.status === 'rejected' ?
+              `Your collaboration request with ${investor.name} is rejected` :
+              request.message
+            }
+          </p>
         </div>
       </CardBody>
       
