@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { formatDistanceToNow } from 'date-fns';
+import { Phone, Video } from 'lucide-react';
 import { ChatConversation } from '../../types';
 import { Avatar } from '../ui/Avatar';
 import { Badge } from '../ui/Badge';
@@ -20,6 +20,18 @@ export const ChatUserList: React.FC<ChatUserListProps> = ({ conversations }) => 
   
   const handleSelectUser = (userId: string) => {
     navigate(`/chat/${userId}`);
+  };
+
+  const handleStartVideoCall = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/calls`);
+  };
+
+  const handleStartAudioCall = (e: React.MouseEvent, userId: string) => {
+    e.stopPropagation();
+    // TODO: Implement audio call functionality
+    console.log('Starting audio call with', userId);
+    navigate(`/calls`);
   };
 
   return (
@@ -64,11 +76,10 @@ export const ChatUserList: React.FC<ChatUserListProps> = ({ conversations }) => 
                         {otherUser.name}
                       </h3>
                       
-                      {lastMessage && (
-                        <span className="text-xs text-gray-500">
-                          {formatDistanceToNow(new Date(lastMessage.timestamp), { addSuffix: false })}
-                        </span>
-                      )}
+                      <div className="flex items-center space-x-2">
+                        <Phone size={18} className="text-gray-400 hover:text-gray-600" onClick={(e) => handleStartAudioCall(e, otherUser.id)} />
+                        <Video size={18} className="text-gray-400 hover:text-gray-600" onClick={(e) => handleStartVideoCall(e)} />
+                      </div>
                     </div>
                     
                     <div className="flex justify-between items-center mt-1">

@@ -68,6 +68,17 @@ export interface Document {
   ownerId: string;
 }
 
+
+export interface CallLog {
+  id: string;
+  callerId: string;
+  receiverId: string;
+  type: 'audio' | 'video';
+  duration: string; // e.g., "5:23"
+  timestamp: string;
+  status: 'answered' | 'missed' | 'outgoing';
+}
+
 export interface AuthContextType {
   user: User | null;
   login: (email: string, password: string, role: UserRole) => Promise<void>;

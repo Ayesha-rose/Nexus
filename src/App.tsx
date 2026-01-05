@@ -31,6 +31,7 @@ import { DealsPage } from './pages/deals/DealsPage';
 // Chat Pages
 import { ChatPage } from './pages/chat/ChatPage';
 import CalendarPage from './pages/calendar/CalendarPage';
+import CallsPage from './pages/calls/CallsPage';
 
 function App() {
   return (
@@ -91,6 +92,10 @@ function App() {
             <Route path="/chat" element={<DashboardLayout />}>
               <Route index element={<ChatPage />} />
               <Route path=":userId" element={<ChatPage />} />
+            </Route>
+
+            <Route path="/calls" element={<DashboardLayout />}>
+              <Route index element={<CallsPage />} />
             </Route>
             
             <Route path="/calendar" element={<DashboardLayout />}>
