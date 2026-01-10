@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { FileText, Upload, Download, Trash2, Share2 } from 'lucide-react';
+import { FileText, Upload, Download, Trash2, Share2, PenTool } from 'lucide-react';
 import { Card, CardHeader, CardBody } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
+import { Modal } from '../../components/ui/Modal'; // Import the generic Modal component
 import { useDropzone } from 'react-dropzone';
 import { PreviewModal } from '../../components/modals/PreviewModal';
+import SignaturePad from '../../components/documents/SignaturePad'; // Import SignaturePad
 
 interface DocumentFile {
   id: number;
@@ -14,9 +16,11 @@ interface DocumentFile {
   url: string;
   lastModified?: string;
   shared?: boolean;
+  status: 'Draft' | 'Review' | 'Signed' | 'Rejected';
+  signature?: string;
 }
 
-const initialDocuments = [
+const initialDocuments: DocumentFile[] = [
   {
     id: 1,
     name: 'Pitch Deck 2024.pdf',
@@ -24,7 +28,8 @@ const initialDocuments = [
     size: '2.4 MB',
     lastModified: '2024-02-15',
     shared: true,
-    url: '/path/to/Pitch Deck 2024.pdf'
+    url: '/path/to/Pitch Deck 2024.pdf',
+    status: 'Draft',
   },
   {
     id: 2,
@@ -33,7 +38,8 @@ const initialDocuments = [
     size: '1.8 MB',
     lastModified: '2024-02-10',
     shared: false,
-    url: '/path/to/Financial Projections.xlsx'
+    url: '/path/to/Financial Projections.xlsx',
+    status: 'Draft',
   },
   {
     id: 3,
@@ -42,7 +48,8 @@ const initialDocuments = [
     size: '3.2 MB',
     lastModified: '2024-02-05',
     shared: true,
-    url: '/path/to/Business Plan.docx'
+    url: '/path/to/Business Plan.docx',
+    status: 'Review',
   },
   {
     id: 4,
@@ -51,14 +58,28 @@ const initialDocuments = [
     size: '5.1 MB',
     lastModified: '2024-01-28',
     shared: false,
-    url: '/path/to/Market Research.pdf'
+    url: '/path/to/Market Research.pdf',
+    status: 'Signed',
+    signature: '/path/to/signature.png',
+  },
+  {
+    id: 5,
+    name: 'Competitor Analysis.pptx',
+    type: 'Presentation',
+    size: '3.8 MB',
+    lastModified: '2024-01-20',
+    shared: true,
+    url: '/path/to/Competitor Analysis.pptx',
+    status: 'Draft',
   }
 ];
 
-export const DocumentsPage: React.FC = () => {
+export const DocumentManagementPage: React.FC = () => {
   const [documents, setDocuments] = useState<DocumentFile[]>(initialDocuments);
   const [previewFile, setPreviewFile] = useState<DocumentFile | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showSignaturePad, setShowSignaturePad] = useState(false); // State to control signature pad visibility
+  const [signingDocument, setSigningDocument] = useState<DocumentFile | null>(null);
 
   const onDrop = (acceptedFiles: File[]) => {
     const newFiles = acceptedFiles.map((file, index) => ({
@@ -66,7 +87,8 @@ export const DocumentsPage: React.FC = () => {
       name: file.name,
       type: file.type,
       size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
-      url: URL.createObjectURL(file)
+      url: URL.createObjectURL(file),
+      status: 'Draft' as const,
     }));
     setDocuments(prev => [...prev, ...newFiles]);
   };
@@ -83,6 +105,58 @@ export const DocumentsPage: React.FC = () => {
     setPreviewFile(null);
   };
 
+  const openSignaturePad = (doc: DocumentFile) => {
+    setSigningDocument(doc);
+    setShowSignaturePad(true);
+  };
+  const closeSignaturePad = () => {
+    setSigningDocument(null);
+    setShowSignaturePad(false);
+  };
+
+  const handleSaveSignature = (signatureImage: string) => {
+    if (signingDocument) {
+      if (!signingDocument.signature) {
+        setDocuments(
+          documents.map(doc =>
+            doc.id === signingDocument.id
+              ? { ...doc, signature: signatureImage, status: 'Signed' }
+              : doc
+          )
+        );
+        console.log('Signature saved for document:', signingDocument.name);
+      }
+    }
+    closeSignaturePad();
+  };
+
+  const handleClearSignature = () => {
+    if (signingDocument) {
+      setDocuments(
+        documents.map(doc =>
+          doc.id === signingDocument.id
+            ? { ...doc, signature: undefined, status: 'Draft' }
+            : doc
+        )
+      );
+      console.log('Signature cleared for document:', signingDocument.name);
+    }
+  };
+
+  const handleMarkAsInReview = (id: number) => {
+    setDocuments(
+      documents.map(doc =>
+        doc.id === id ? { ...doc, status: 'Review' } : doc
+      )
+    );
+  };
+
+  const handleReject = (id: number) => {
+    setDocuments(
+      documents.map(doc => (doc.id === id ? { ...doc, status: 'Rejected' } : doc))
+    );
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       {previewFile && (
@@ -92,20 +166,30 @@ export const DocumentsPage: React.FC = () => {
           file={previewFile}
         />
       )}
+
+      {/* Signature Pad Modal */}
+      <Modal isOpen={showSignaturePad} onClose={closeSignaturePad} title="Sign Document">
+        <SignaturePad onSave={handleSaveSignature} onClear={handleClearSignature} />
+      </Modal>
+
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Documents</h1>
           <p className="text-gray-600">Manage your startup's important files</p>
         </div>
         
-        <div {...getRootProps()}>
-          <input {...getInputProps()} />
-          <Button leftIcon={<Upload size={18} />}>
-            Upload Document
-          </Button>
+        <div className="flex items-center gap-4">
+          <div {...getRootProps()}>
+            <input {...getInputProps()} />
+            <Button leftIcon={<Upload size={18} />}>
+              Upload Document
+            </Button>
+          </div>
         </div>
       </div>
       
+
+
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Storage info */}
         <Card className="lg:col-span-1">
@@ -166,9 +250,9 @@ export const DocumentsPage: React.FC = () => {
                 {documents.map(doc => (
                   <div
                     key={doc.id}
-                    className="flex items-center p-4 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                    className="flex items-center px-0 py-4 hover:bg-gray-50 rounded-lg transition-colors duration-200"
                   >
-                    <div className="p-2 bg-primary-50 rounded-lg mr-4">
+                    <div className="p-1 bg-primary-50 rounded-lg mr-4">
                       <FileText size={24} className="text-primary-600" />
                     </div>
                     
@@ -180,6 +264,11 @@ export const DocumentsPage: React.FC = () => {
                         {doc.shared && (
                           <Badge variant="secondary" size="sm">Shared</Badge>
                         )}
+                        <Badge variant={
+                          doc.status === 'Signed' ? 'success' :
+                          doc.status === 'Review' ? 'warning' :
+                          doc.status === 'Rejected' ? 'error' : 'secondary'
+                        } size="sm">{doc.status}</Badge>
                       </div>
                       
                       <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
@@ -200,6 +289,37 @@ export const DocumentsPage: React.FC = () => {
                         onClick={() => openModal(doc)}
                       >
                         Preview
+                      </Button>
+                      {doc.status === 'Review' && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="p-2 text-error-600 hover:text-error-700"
+                          aria-label="Reject"
+                          onClick={() => handleReject(doc.id)}
+                        >
+                          Reject
+                        </Button>
+                      )}
+                      {doc.status === 'Draft' && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="p-2"
+                          aria-label="Mark as In Review"
+                          onClick={() => handleMarkAsInReview(doc.id)}
+                        >
+                          Review
+                        </Button>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-2"
+                        aria-label="Sign"
+                        onClick={() => openSignaturePad(doc)}
+                      >
+                        <PenTool size={18} />
                       </Button>
                       <Button
                         variant="ghost"

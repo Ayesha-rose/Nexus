@@ -44,7 +44,7 @@ export const Sidebar: React.FC = () => {
     { to: '/notifications', icon: <Bell size={20} />, text: 'Notifications' },
     { to: '/calendar', icon: <Calendar size={20} />, text: 'Calendar' },
     { to: '/calls', icon: <Phone size={20} />, text: 'Calls' },
-    { to: '/documents', icon: <FileText size={20} />, text: 'Documents' },
+    { to: '/documents', icon: <FileText size={20} />, text: 'Document' },
   ];
   
   const investorItems = [
@@ -55,6 +55,7 @@ export const Sidebar: React.FC = () => {
     { to: '/notifications', icon: <Bell size={20} />, text: 'Notifications' },
     { to: '/calendar', icon: <Calendar size={20} />, text: 'Calendar' },
     { to: '/calls', icon: <Phone size={20} />, text: 'Calls' },
+    { to: '/documents', icon: <FileText size={20} />, text: 'Document' },
     { to: '/deals', icon: <FileText size={20} />, text: 'Deals' },
   ];
   
