@@ -1,14 +1,34 @@
 import React, { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 
+type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
+
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
   children: React.ReactNode;
+  size?: ModalSize;
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
+const sizeClasses: Record<ModalSize, string> = {
+  sm: 'max-w-sm',
+  md: 'max-w-md',
+  lg: 'max-w-lg',
+  xl: 'max-w-xl',
+  '2xl': 'max-w-2xl',
+  '3xl': 'max-w-3xl',
+};
+
+export const Modal: React.FC<ModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  title, 
+  children,
+  size = 'md',
+}) => {
+  const modalSizeClass = sizeClasses[size];
+
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={onClose}>
@@ -35,7 +55,10 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all" onClick={(e) => e.stopPropagation()}>
+              <Dialog.Panel 
+                className={`w-full ${modalSizeClass} transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all`}
+                onClick={(e) => e.stopPropagation()}
+              >
                 <Dialog.Title
                   as="h3"
                   className="text-lg font-medium leading-6 text-gray-900"
