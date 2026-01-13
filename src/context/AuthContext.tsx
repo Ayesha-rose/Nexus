@@ -169,6 +169,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updatedUser));
+  };
+
   const value = {
     user,
     login,
@@ -177,6 +182,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     forgotPassword,
     resetPassword,
     updateProfile,
+    updateUser,
     isAuthenticated: !!user,
     isLoading
   };

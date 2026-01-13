@@ -5,6 +5,10 @@ import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { Avatar } from '../../components/ui/Avatar';
+import { FundingModal } from '../../components/modals/FundingModal';
+import { useAuth } from '../../context/AuthContext';
+import { users } from '../../data/users';
+import { transactions } from '../../data/transactions';
 
 const deals = [
   {
@@ -49,8 +53,41 @@ const deals = [
 ];
 
 export const DealsPage: React.FC = () => {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
+  const [isFundingModalOpen, setIsFundingModalOpen] = useState(false);
+  const [selectedDeal, setSelectedDeal] = useState<any>(null);
+
+  const handleFund = (deal: any) => {
+    setSelectedDeal(deal);
+    setIsFundingModalOpen(true);
+  };
+
+  const handleFundingSubmit = (amount: number) => {
+    if (!user || !selectedDeal) return;
+
+    const investor = users.find(u => u.id === user.id);
+    const entrepreneur = users.find(u => u.name === selectedDeal.startup.name);
+
+    if (investor && entrepreneur) {
+      investor.walletBalance -= amount;
+      entrepreneur.walletBalance += amount;
+
+      const newTransaction = {
+        id: `txn${transactions.length + 1}`,
+        amount: amount,
+        currency: 'USD',
+        sender: investor.name,
+        receiver: entrepreneur.name,
+        status: 'completed' as const,
+        timestamp: new Date().toISOString(),
+      };
+      transactions.unshift(newTransaction);
+    }
+    
+    setIsFundingModalOpen(false);
+  };
   
   const statuses = ['Due Diligence', 'Term Sheet', 'Negotiation', 'Closed', 'Passed'];
   
@@ -256,9 +293,14 @@ export const DealsPage: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="mr-2">
                         View Details
                       </Button>
+                      {user?.role === 'investor' && (
+                        <Button variant="primary" size="sm" onClick={() => handleFund(deal)}>
+                          Fund Deal
+                        </Button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -267,6 +309,13 @@ export const DealsPage: React.FC = () => {
           </div>
         </CardBody>
       </Card>
+
+      <FundingModal
+        isOpen={isFundingModalOpen}
+        onClose={() => setIsFundingModalOpen(false)}
+        deal={selectedDeal}
+        onFund={handleFundingSubmit}
+      />
     </div>
   );
 };

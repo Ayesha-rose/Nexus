@@ -6,6 +6,7 @@ import { Card, CardBody, CardHeader } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { CollaborationRequestCard } from '../../components/collaboration/CollaborationRequestCard';
 import { InvestorCard } from '../../components/investor/InvestorCard';
+import WalletBalance from '../../components/payments/WalletBalance';
 import { useAuth } from '../../context/AuthContext';
 import { useCalendar } from '../../context/CalendarContext';
 import { CollaborationRequest } from '../../types';
@@ -58,6 +59,7 @@ export const EntrepreneurDashboard: React.FC = () => {
       
       {/* Summary cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <WalletBalance user={user} />
         <Card className="bg-primary-50 border border-primary-100">
           <CardBody>
             <div className="flex items-center">

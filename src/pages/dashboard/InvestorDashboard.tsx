@@ -6,6 +6,7 @@ import { Card, CardBody, CardHeader } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
 import { Badge } from '../../components/ui/Badge';
 import { EntrepreneurCard } from '../../components/entrepreneur/EntrepreneurCard';
+import WalletBalance from '../../components/payments/WalletBalance';
 import { useAuth } from '../../context/AuthContext';
 import { useCalendar } from '../../context/CalendarContext';
 import { entrepreneurs, findUserById } from '../../data/users';
@@ -104,6 +105,7 @@ export const InvestorDashboard: React.FC = () => {
       
       {/* Stats summary */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <WalletBalance user={user} />
         <Card className="bg-primary-50 border border-primary-100">
           <CardBody>
             <div className="flex items-center">

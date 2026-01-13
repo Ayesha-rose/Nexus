@@ -15,6 +15,7 @@ export const entrepreneurs: Entrepreneur[] = [
     location: 'San Francisco, CA',
     foundedYear: 2021,
     teamSize: 12,
+    walletBalance: 120000,
     isOnline: true,
     createdAt: '2023-01-15T09:24:00Z'
   },
@@ -32,6 +33,7 @@ export const entrepreneurs: Entrepreneur[] = [
     location: 'Portland, OR',
     foundedYear: 2020,
     teamSize: 8,
+    walletBalance: 75000,
     isOnline: false,
     createdAt: '2022-03-10T14:35:00Z'
   },
@@ -49,6 +51,7 @@ export const entrepreneurs: Entrepreneur[] = [
     location: 'Boston, MA',
     foundedYear: 2022,
     teamSize: 5,
+    walletBalance: 250000,
     isOnline: true,
     createdAt: '2022-07-22T11:42:00Z'
   },
@@ -66,6 +69,7 @@ export const entrepreneurs: Entrepreneur[] = [
     location: 'Chicago, IL',
     foundedYear: 2019,
     teamSize: 14,
+    walletBalance: 50000,
     isOnline: false,
     createdAt: '2021-11-05T16:18:00Z'
   }
@@ -85,6 +89,7 @@ export const investors: Investor[] = [
     totalInvestments: 12,
     minimumInvestment: '$250K',
     maximumInvestment: '$1.5M',
+    walletBalance: 5000000,
     isOnline: true,
     createdAt: '2020-05-18T10:15:00Z'
   },
@@ -101,6 +106,7 @@ export const investors: Investor[] = [
     totalInvestments: 18,
     minimumInvestment: '$500K',
     maximumInvestment: '$3M',
+    walletBalance: 10000000,
     isOnline: false,
     createdAt: '2019-08-30T15:40:00Z'
   },
@@ -117,6 +123,7 @@ export const investors: Investor[] = [
     totalInvestments: 9,
     minimumInvestment: '$1M',
     maximumInvestment: '$5M',
+    walletBalance: 8000000,
     isOnline: true,
     createdAt: '2021-02-12T09:30:00Z'
   }

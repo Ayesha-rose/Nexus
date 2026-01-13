@@ -9,6 +9,7 @@ export interface User {
   bio: string;
   isOnline?: boolean;
   createdAt: string;
+  walletBalance?: number;
 }
 
 export interface Entrepreneur extends User {
@@ -69,15 +70,97 @@ export interface Document {
 }
 
 
+
+
+
 export interface CallLog {
+
+
   id: string;
+
+
   callerId: string;
+
+
   receiverId: string;
+
+
   type: 'audio' | 'video';
+
+
   duration: string; // e.g., "5:23"
+
+
   timestamp: string;
+
+
   status: 'answered' | 'missed' | 'outgoing';
+
+
 }
+
+
+
+
+
+export interface Transaction {
+
+
+
+
+
+  id: string;
+
+
+
+
+
+  amount: number;
+
+
+
+
+
+  currency: string;
+
+
+
+
+
+  sender: string;
+
+
+
+
+
+  receiver: string;
+
+
+
+
+
+  status: 'completed' | 'pending' | 'failed';
+
+
+
+
+
+  timestamp: string;
+
+
+
+
+
+  type?: 'DEPOSIT' | 'WITHDRAWAL' | 'TRANSFER';
+
+
+
+
+
+}
+
+
+
 
 export interface AuthContextType {
   user: User | null;
@@ -87,6 +170,7 @@ export interface AuthContextType {
   forgotPassword: (email: string) => Promise<void>;
   resetPassword: (token: string, newPassword: string) => Promise<void>;
   updateProfile: (userId: string, updates: Partial<User>) => Promise<void>;
+  updateUser: (user: User) => void;
   isAuthenticated: boolean;
   isLoading: boolean;
 }
