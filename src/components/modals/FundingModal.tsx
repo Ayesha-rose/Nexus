@@ -3,11 +3,12 @@ import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { useAuth } from '../../context/AuthContext';
+import { Deal } from '../../types';
 
 interface FundingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  deal: any; // Replace 'any' with a proper Deal type
+  deal: Deal;
   onFund: (amount: number) => void;
 }
 

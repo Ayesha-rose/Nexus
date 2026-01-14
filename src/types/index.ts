@@ -174,3 +174,8 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
 }
+
+export interface Deal {
+  id: string;
+  startup: Entrepreneur;
+}

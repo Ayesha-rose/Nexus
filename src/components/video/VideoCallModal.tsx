@@ -34,12 +34,15 @@ const VideoCallModal: React.FC<VideoCallModalProps> = ({ localUserId, remoteUser
   }, []);
 
   useEffect(() => {
+    let localStream: MediaStream | null = null;
+
     const setupMedia = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: callType === 'video' && !isVideoOff,
           audio: true,
         });
+        localStream = stream;
         if (localVideoRef.current) {
           localVideoRef.current.srcObject = stream;
         }
@@ -53,9 +56,8 @@ const VideoCallModal: React.FC<VideoCallModalProps> = ({ localUserId, remoteUser
     }
 
     return () => {
-      // Clean up streams
-      if (localVideoRef.current && localVideoRef.current.srcObject) {
-        (localVideoRef.current.srcObject as MediaStream).getTracks().forEach(track => track.stop());
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
       }
     };
   }, [callType, isVideoOff, isScreenSharing]);
