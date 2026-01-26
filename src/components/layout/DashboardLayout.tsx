@@ -3,6 +3,7 @@ import { Outlet, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
+import { Footer } from './Footer';
 
 export const DashboardLayout: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -32,6 +33,7 @@ export const DashboardLayout: React.FC = () => {
           </div>
         </main>
       </div>
+      <Footer />
     </div>
   );
 };

@@ -9,6 +9,7 @@ import { DashboardLayout } from './components/layout/DashboardLayout';
 // Auth Pages
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
+import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 
 // Dashboard Pages
 import { EntrepreneurDashboard } from './pages/dashboard/EntrepreneurDashboard';
@@ -28,6 +29,10 @@ import { SettingsPage } from './pages/settings/SettingsPage';
 import { HelpPage } from './pages/help/HelpPage';
 import { DealsPage } from './pages/deals/DealsPage';
 import PaymentsPage from './pages/payments/PaymentsPage';
+import { TermsOfService } from './pages/legal/TermsOfService';
+import { PrivacyPolicy } from './pages/legal/PrivacyPolicy';
+import { CookiePolicy } from './pages/legal/CookiePolicy';
+import { ContactUs } from './pages/ContactUs';
 
 // Chat Pages
 import { ChatPage } from './pages/chat/ChatPage';
@@ -43,6 +48,7 @@ function App() {
             {/* Authentication Routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             
             {/* Dashboard Routes */}
             <Route path="/dashboard" element={<DashboardLayout />}>
@@ -50,13 +56,13 @@ function App() {
               <Route path="investor" element={<InvestorDashboard />} />
             </Route>
             
-            {/* Profile Routes */}
+            {/* Profile Pages */}
             <Route path="/profile" element={<DashboardLayout />}>
               <Route path="entrepreneur/:id" element={<EntrepreneurProfile />} />
               <Route path="investor/:id" element={<InvestorProfile />} />
             </Route>
             
-            {/* Feature Routes */}
+            {/* Feature Pages */}
             <Route path="/investors" element={<DashboardLayout />}>
               <Route index element={<InvestorsPage />} />
             </Route>
@@ -91,6 +97,22 @@ function App() {
 
             <Route path="/payments" element={<DashboardLayout />}>
               <Route index element={<PaymentsPage />} />
+            </Route>
+
+            <Route path="/terms-of-service" element={<DashboardLayout />}>
+              <Route index element={<TermsOfService />} />
+            </Route>
+
+            <Route path="/privacy-policy" element={<DashboardLayout />}>
+              <Route index element={<PrivacyPolicy />} />
+            </Route>
+
+            <Route path="/cookie-policy" element={<DashboardLayout />}>
+              <Route index element={<CookiePolicy />} />
+            </Route>
+
+            <Route path="/contact-us" element={<DashboardLayout />}>
+              <Route index element={<ContactUs />} />
             </Route>
             
             {/* Chat Routes */}

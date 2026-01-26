@@ -1,84 +1,61 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, ArrowLeft } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { Mail, ArrowLeft, AlertCircle } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
+import { toast, Toaster } from 'react-hot-toast';
 
 export const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  
-  const { forgotPassword } = useAuth();
-  
+  const [error, setError] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setIsLoading(true);
-    
-    await forgotPassword(email);
-    setIsSubmitted(true);
-    setIsLoading(false);
+
+    // Simulate an API call
+    setTimeout(() => {
+      if (email === 'fail@example.com') {
+        setError('This email address is not registered.');
+        toast.error('This email address is not registered.');
+      } else {
+        toast.success('A password reset link has been sent to your email.');
+      }
+      setIsLoading(false);
+    }, 1500);
   };
-  
-  if (isSubmitted) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="text-center">
-            <Mail className="mx-auto h-12 w-12 text-primary-600" />
-            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-              Check your email
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              We've sent password reset instructions to {email}
-            </p>
-          </div>
-          
-          <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <div className="space-y-4">
-              <p className="text-sm text-gray-500">
-                Didn't receive the email? Check your spam folder or try again.
-              </p>
-              
-              <Button
-                variant="outline"
-                fullWidth
-                onClick={() => setIsSubmitted(false)}
-              >
-                Try again
-              </Button>
-              
-              <Link to="/login">
-                <Button
-                  variant="ghost"
-                  fullWidth
-                  leftIcon={<ArrowLeft size={18} />}
-                >
-                  Back to login
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <Toaster position="top-center" reverseOrder={false} />
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="text-center">
-          <Mail className="mx-auto h-12 w-12 text-primary-600" />
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Forgot your password?
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Enter your email address and we'll send you instructions to reset your password.
-          </p>
+      <div className="flex justify-center">
+          <div className="w-12 h-12 bg-primary-600 rounded-md flex items-center justify-center">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
+              <path d="M20 7H4C2.89543 7 2 7.89543 2 9V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19V9C22 7.89543 21.1046 7 20 7Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M16 21V5C16 3.89543 15.1046 3 14 3H10C8.89543 3 8 3.89543 8 5V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
         </div>
-        
-        <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Forgot Your Password?
+        </h2>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          Enter your email address and we'll send you a link to reset it.
+        </p>
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          {error && (
+            <div className="mb-4 bg-error-50 border border-error-500 text-error-700 px-4 py-3 rounded-md flex items-start">
+              <AlertCircle size={18} className="mr-2 mt-0.5" />
+              <span>{error}</span>
+            </div>
+          )}
+          
           <form className="space-y-6" onSubmit={handleSubmit}>
             <Input
               label="Email address"
@@ -88,6 +65,7 @@ export const ForgotPasswordPage: React.FC = () => {
               required
               fullWidth
               startAdornment={<Mail size={18} />}
+              placeholder="you@example.com"
             />
             
             <Button
@@ -95,21 +73,23 @@ export const ForgotPasswordPage: React.FC = () => {
               fullWidth
               isLoading={isLoading}
             >
-              Send reset instructions
+              Send Reset Link
             </Button>
-            
-            <Link to="/login">
-              <Button
-                variant="ghost"
-                fullWidth
-                leftIcon={<ArrowLeft size={18} />}
-              >
-                Back to login
-              </Button>
-            </Link>
           </form>
+          
+          <div className="mt-6 text-center">
+            <Link
+              to="/login"
+              className="font-medium text-primary-600 hover:text-primary-500 flex items-center justify-center"
+            >
+              <ArrowLeft size={16} className="mr-1" />
+              Back to Sign In
+            </Link>
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
+export default ForgotPasswordPage;

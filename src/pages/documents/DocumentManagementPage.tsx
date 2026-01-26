@@ -156,6 +156,14 @@ export const DocumentManagementPage: React.FC = () => {
       documents.map(doc => (doc.id === id ? { ...doc, status: 'Rejected' } : doc))
     );
   };
+  const handleDownload = (url: string, name: string) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', name);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -166,8 +174,6 @@ export const DocumentManagementPage: React.FC = () => {
           file={previewFile}
         />
       )}
-
-      {/* Signature Pad Modal */}
       <Modal isOpen={showSignaturePad} onClose={closeSignaturePad} title="Sign Document">
         <SignaturePad onSave={handleSaveSignature} onClear={handleClearSignature} />
       </Modal>
@@ -326,6 +332,7 @@ export const DocumentManagementPage: React.FC = () => {
                         size="sm"
                         className="p-2"
                         aria-label="Download"
+                        onClick={() => handleDownload(doc.url, doc.name)}
                       >
                         <Download size={18} />
                       </Button>
